@@ -13,6 +13,7 @@ app.use(cookieParser(process.env.COOKIE_PARSER_SECRET_KEY));
 app.use(cors({ credentials: true, origin: process.env.ALLOW_CORS_ORIGIN }));
 app.use("/api/auth", userAuthRoutes);
 
+// mongoo db connect
 mongoose
   .connect(process.env.URL_MONGODB)
   .then(() => {
@@ -22,6 +23,7 @@ mongoose
     console.log(err);
   });
 
+// server port
 app.listen(3000, () => {
   console.log("Server is running on port 3000!");
 });

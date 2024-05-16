@@ -1,5 +1,6 @@
 import axios from "axios";
 
+// api address
 const BASE_URL = process.env.API_ADDRESS;
 
 const app = axios.create({
@@ -7,6 +8,7 @@ const app = axios.create({
   withCredentials: true,
 });
 
+// interceptors
 app.interceptors.request.use(
   (res) => res,
   (err) => Promise.reject(err)

@@ -8,6 +8,8 @@ const {
   verifyRefreshToken,
 } = require("../utils/functions.js");
 
+
+// register function
 const signup = async (req, res, next) => {
   const { username, email, password } = req.body;
 
@@ -48,6 +50,7 @@ const signup = async (req, res, next) => {
   }
 };
 
+// login function
 const signin = async (req, res, next) => {
   const { email, password } = req.body;
 
@@ -79,6 +82,7 @@ const signin = async (req, res, next) => {
   }
 };
 
+// refreshToken function
 const refreshToken = async (req, res) => {
   const userId = await verifyRefreshToken(req);
   const user = await User.findById(userId);
@@ -92,6 +96,7 @@ const refreshToken = async (req, res) => {
   });
 };
 
+// log out function
 const signout = (req, res, next) => {
   const cookieOptions = {
     maxAge: 1,
