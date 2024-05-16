@@ -1,10 +1,121 @@
-const User = require("../models/user.js");
+const createError = require("http-errors");
+const { User } = require("../models/user.js");
 const bcryptjs = require("bcryptjs");
 const jwt = require("jsonwebtoken");
+const {
+  setAccessToken,
+  setRefreshToken,
+  verifyRefreshToken,
+} = require("../utils/functions.js");
 
+const signup = async (req, res, next) => {
+  const { username, email, password } = req.body;
 
-export const signup = async (req, res, next) => {};
+  if (
+    !username ||
+    !email ||
+    !password ||
+    username === "" ||
+    email === "" ||
+    password === ""
+  ) {
+    throw createError.BadRequest("All fields are required");
+  }
 
-export const signin = async (req, res, next) => {};
+  const hashedPassword = bcryptjs.hashSync(password, 10);
 
-export const signout = (req, res, next) => {};
+  const newUser = new User({
+    username,
+    email,
+    password: hashedPassword,
+  });
+
+  try {
+    // get access_token when signup route
+    await newUser.save();
+    const validUser = await User.findOne({ email });
+    const token = jwt.sign(
+      { id: validUser._id, ...validUser },
+      process.env.JWT_SECRET
+    );
+    await setAccessToken(res, validUser);
+    await setRefreshToken(res, validUser);
+    res.status(201).json({ message: "Signup successful", token });
+  } catch (error) {
+    next(error);
+    console.log(error);
+    throw createError.Unauthorized("ثبت نام شما انجام نشد.");
+  }
+};
+
+const signin = async (req, res, next) => {
+  const { email, password } = req.body;
+
+  if (!email || !password || email === "" || password === "") {
+    throw createError.BadRequest("All fields are required");
+  }
+
+  try {
+    const validUser = await User.findOne({ email });
+    if (!validUser) {
+      throw createError.NotFound("User not found");
+    }
+    const validPassword = bcryptjs.compareSync(password, validUser.password);
+    if (!validPassword) {
+      throw createError.BadRequest("Invalid password");
+    }
+    const token = jwt.sign(
+      { id: validUser._id, ...validUser },
+      process.env.JWT_SECRET
+    );
+
+    const { password: pass, ...user } = validUser._doc;
+    await setAccessToken(res, user);
+    await setRefreshToken(res, user);
+    res.status(200).json({ message: "Login Successfully", user, token });
+  } catch (error) {
+    next(error);
+    throw createError.Unauthorized(" ورود شما انجام نشد.");
+  }
+};
+
+const refreshToken = async (req, res) => {
+  const userId = await verifyRefreshToken(req);
+  const user = await User.findById(userId);
+  await setAccessToken(res, user);
+  await setRefreshToken(res, user);
+  return res.status(200).json({
+    StatusCode: 200,
+    data: {
+      user,
+    },
+  });
+};
+
+const signout = (req, res, next) => {
+  const cookieOptions = {
+    maxAge: 1,
+    expires: Date.now(),
+    httpOnly: true,
+    signed: true,
+    sameSite: "Lax",
+    secure: true,
+    path: "/",
+    domain:
+      process.env.NODE_ENV === "development" ? "localhost" : ".fronthooks.ir",
+  };
+  res.cookie("accessToken", null, cookieOptions);
+  res.cookie("refreshToken", null, cookieOptions);
+
+  return res.status(200).json({
+    StatusCode: 200,
+    message: "با موفقیت خارج شدید",
+  });
+};
+
+module.exports = {
+  signout,
+  signin,
+  signup,
+  refreshToken,
+};

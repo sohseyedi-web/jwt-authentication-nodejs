@@ -1,10 +1,18 @@
-import express from "express";
-import { signin, signout, signup } from "./../controllers/userAuth.controller";
+const express = require("express");
+const {
+  signin,
+  signout,
+  signup,
+  refreshToken,
+} = require("./../controllers/userAuth.controller");
 
 const router = express.Router();
 
 router.post("/signup", signup);
 router.post("/signin", signin);
 router.post("/signout", signout);
+router.get("/refresh-token", refreshToken);
 
-export default router;
+module.exports = {
+  userAuthRoutes: router,
+};

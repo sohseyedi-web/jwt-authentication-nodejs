@@ -25,7 +25,7 @@ function generateToken(user, expiresIn, secret) {
   });
 }
 
-export const setAccessToken = async (res, user) => {
+const setAccessToken = async (res, user) => {
   const cookieOptions = {
     maxAge: 1000 * 60 * 60 * 24 * 1, // would expire after 1 days
     httpOnly: true, // The cookie only accessible by the web server
@@ -42,7 +42,7 @@ export const setAccessToken = async (res, user) => {
   );
 };
 
-export const setRefreshToken = async (res, user) => {
+const setRefreshToken = async (res, user) => {
   const cookieOptions = {
     maxAge: 1000 * 60 * 60 * 24 * 365, // would expire after 1 year
     httpOnly: true, // The cookie only accessible by the web server
@@ -59,7 +59,7 @@ export const setRefreshToken = async (res, user) => {
   );
 };
 
-export const verifyRefreshToken = (req) => {
+const verifyRefreshToken = (req) => {
   const refreshToken = req.signedCookies["refreshToken"];
   if (!refreshToken) {
     throw createError.Unauthorized("لطفا وارد حساب کاربری خود شوید.");
@@ -90,4 +90,10 @@ export const verifyRefreshToken = (req) => {
       }
     );
   });
+};
+
+module.exports = {
+  setAccessToken,
+  setRefreshToken,
+  verifyRefreshToken,
 };
