@@ -10,11 +10,12 @@ dotenv.config();
 app.use(express.json());
 app.use(cookieParser(process.env.COOKIE_PARSER_SECRET_KEY));
 app.use(cors({ credentials: true, origin: process.env.ALLOW_CORS_ORIGIN }));
+app.use("/api/auth", authRoutes);
 
 mongoose
   .connect(process.env.URL_MONGODB)
   .then(() => {
-    console.log("MongoDb is connected");
+    console.log("MongoDB is connected");
   })
   .catch((err) => {
     console.log(err);
