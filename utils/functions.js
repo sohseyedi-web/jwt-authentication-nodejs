@@ -1,7 +1,7 @@
 const createError = require("http-errors");
 const JWT = require("jsonwebtoken");
 const cookieParser = require("cookie-parser");
-const User = require("../models/user.js");
+const { User } = require("../models/user.js");
 
 function generateToken(user, expiresIn, secret) {
   return new Promise((resolve, reject) => {
@@ -82,10 +82,10 @@ const verifyRefreshToken = (req) => {
             otp: 0,
             resetLink: 0,
           });
-          if (!user) reject(createError.Unauthorized("حساب کاربری یافت نشد"));
+          if (!user) reject(createError.Unauthorized("User account not found"));
           return resolve(_id);
         } catch (error) {
-          reject(createError.Unauthorized("حساب کاربری یافت نشد"));
+          reject(createError.Unauthorized("User account not found"));
         }
       }
     );
