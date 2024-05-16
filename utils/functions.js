@@ -18,7 +18,7 @@ function generateToken(user, expiresIn, secret) {
       secret || process.env.TOKEN_SECRET_KEY,
       options,
       (err, token) => {
-        if (err) reject(createError.InternalServerError("خطای سروری"));
+        if (err) reject(createError.InternalServerError("Network Error"));
         resolve(token);
       }
     );
@@ -62,7 +62,7 @@ const setRefreshToken = async (res, user) => {
 const verifyRefreshToken = (req) => {
   const refreshToken = req.signedCookies["refreshToken"];
   if (!refreshToken) {
-    throw createError.Unauthorized("لطفا وارد حساب کاربری خود شوید.");
+    throw createError.Unauthorized("Please Login to your account.");
   }
   const token = cookieParser.signedCookie(
     refreshToken,
@@ -75,7 +75,7 @@ const verifyRefreshToken = (req) => {
       async (err, payload) => {
         try {
           if (err)
-            reject(createError.Unauthorized("لطفا حساب کاربری خود شوید"));
+            reject(createError.Unauthorized("Please Login to your account."));
           const { _id } = payload;
           const user = await User.findById(_id, {
             password: 0,

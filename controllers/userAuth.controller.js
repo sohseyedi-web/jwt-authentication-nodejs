@@ -44,7 +44,7 @@ const signup = async (req, res, next) => {
   } catch (error) {
     next(error);
     console.log(error);
-    throw createError.Unauthorized("ثبت نام شما انجام نشد.");
+    throw createError.Unauthorized("Your registration failed.");
   }
 };
 
@@ -75,7 +75,7 @@ const signin = async (req, res, next) => {
     res.status(200).json({ message: "Login Successfully", user, token });
   } catch (error) {
     next(error);
-    throw createError.Unauthorized(" ورود شما انجام نشد.");
+    throw createError.Unauthorized("Login Failed.");
   }
 };
 
@@ -109,7 +109,7 @@ const signout = (req, res, next) => {
 
   return res.status(200).json({
     StatusCode: 200,
-    message: "با موفقیت خارج شدید",
+    message: "LogOut successfully",
   });
 };
 
