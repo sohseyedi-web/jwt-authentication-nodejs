@@ -7,19 +7,22 @@ const {
   setRefreshToken,
   verifyRefreshToken,
 } = require("../utils/functions.js");
-
+const { signinSchema, signupSchema } = require("../validators/user.schema.js");
 
 // register function
 const signup = async (req, res, next) => {
-  const { username, email, password } = req.body;
+  const { username, email, password, role } = req.body;
+  await signupSchema.validateAsync(req.body);
 
   if (
     !username ||
     !email ||
     !password ||
+    !role ||
     username === "" ||
     email === "" ||
-    password === ""
+    password === "" ||
+    role === ""
   ) {
     throw createError.BadRequest("All fields are required");
   }
@@ -30,6 +33,7 @@ const signup = async (req, res, next) => {
     username,
     email,
     password: hashedPassword,
+    role,
   });
 
   try {
@@ -53,7 +57,7 @@ const signup = async (req, res, next) => {
 // login function
 const signin = async (req, res, next) => {
   const { email, password } = req.body;
-
+  await signinSchema.validateAsync(req.body);
   if (!email || !password || email === "" || password === "") {
     throw createError.BadRequest("All fields are required");
   }
@@ -73,11 +77,10 @@ const signin = async (req, res, next) => {
     );
 
     const { password: pass, ...user } = validUser._doc;
-    await setAccessToken(res, user);
-    await setRefreshToken(res, user);
+    await setAccessToken(res, validUser);
+    await setRefreshToken(res, validUser);
     res.status(200).json({ message: "Login Successfully", user, token });
   } catch (error) {
-    next(error);
     throw createError.Unauthorized("Login Failed.");
   }
 };
