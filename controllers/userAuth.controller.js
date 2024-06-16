@@ -107,7 +107,7 @@ const signout = (req, res, next) => {
     secure: true,
     path: "/",
     domain:
-      process.env.NODE_ENV === "development" ? "localhost" : ".fronthooks.ir",
+      process.env.NODE_ENV === "development" ? "localhost" : ".example.ir",
   };
   res.cookie("accessToken", null, cookieOptions);
   res.cookie("refreshToken", null, cookieOptions);
