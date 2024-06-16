@@ -3,7 +3,5 @@ module.exports = {
   ROLES: Object.freeze({
     USER: "USER",
     ADMIN: "ADMIN",
-    DOCTOR: "DOCTOR",
-    SUPPORTER: "SUPPORTER",
   }),
 };
